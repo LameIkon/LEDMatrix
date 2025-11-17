@@ -2,13 +2,15 @@
 
 ArduinoLEDMatrix matrix;
 
+const int potPin = A0;
+
 void setup() {
   Serial.begin(115200);
   matrix.begin();
 }
 
 // MOLSTEDS CODE!!
-float freq = 0.5;
+float freq;
 float offset = 0.25;
 
 float lerp(float outMin, float outMax, float alpha) {
@@ -64,11 +66,20 @@ int y;
 void loop(){
   matrix.renderBitmap(frame, 8, 12);
   //turnEntireFrame();
-  //delay(100);
+  //delay(500);
 
   //delay(20);
 
   float time = millis() / 1000.0; // time in seconds
+
+  freq = remap((float)analogRead(potPin), 0.0, 1023.0, 0.125, 3.0);
+
+  if(freq < 0.25) freq = 0.125;
+  else if(freq < 0.5) freq = 0.25;
+  else if(freq < 1.0) freq = 0.5;
+  else if(freq < 2.0) freq = 1.0;
+  else freq = 2.0;
+
 
 
   turnEntireFrameOff();
@@ -85,7 +96,7 @@ void loop(){
   }
 
 
-  Serial.print(time);
+  Serial.print(freq);
   Serial.print(',');
   Serial.print(x);
   Serial.print(',');
