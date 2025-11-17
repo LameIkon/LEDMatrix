@@ -59,6 +59,8 @@ void turnLEDsOn(int x, int y){
 float freq = 1.0;
 float offset = 0.25;
 
+float timeScale = 1.0;
+
 int x;
 int y;
   
@@ -69,14 +71,14 @@ void loop(){
 
   //delay(20);
 
-  float time = millis() / 1000.0; // time in seconds
+  float time = millis() / 1000.0 * timeScale; // time in seconds
 
 
   turnEntireFrameOff();
 
   for(int i = 0; i < 12; i++){
     // float sinValue = sinf(6.28 * time * freq + (freq * i) - 1.57 + 6.28 * offset); // sinf returns -1.0 to 1.0
-    float sinValue = sinf(6.28 * (time + i / 11.0 * 1.0) * freq - 1.57 + 6.28 * offset); // sinf returns -1.0 to 1.0
+    float sinValue = sinf(6.28 * (time + i / (11.0 / timeScale)) * freq - 1.57 + 6.28 * offset); // sinf returns -1.0 to 1.0
     float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, 8.0); // sin remapped to 0.0 to 8.0
     
 
