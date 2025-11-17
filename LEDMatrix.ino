@@ -8,8 +8,6 @@ void setup() {
 }
 
 // MOLSTEDS CODE!!
-float freq = 0.5;
-float offset = 0.25;
 
 float lerp(float outMin, float outMax, float alpha) {
   // mixes 2 values linearly based on 0-1 range
@@ -58,6 +56,9 @@ void turnLEDsOn(int x, int y){
 
 }
 
+float freq = 1.0;
+float offset = 0.25;
+
 int x;
 int y;
   
@@ -74,12 +75,13 @@ void loop(){
   turnEntireFrameOff();
 
   for(int i = 0; i < 12; i++){
-    float sinValue = sinf(6.28 * time * freq + (freq * i) - 1.57 + 6.28 * offset); // sinf returns -1.0 to 1.0
+    // float sinValue = sinf(6.28 * time * freq + (freq * i) - 1.57 + 6.28 * offset); // sinf returns -1.0 to 1.0
+    float sinValue = sinf(6.28 * (time + i / 11.0 * 1.0) * freq - 1.57 + 6.28 * offset); // sinf returns -1.0 to 1.0
     float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, 8.0); // sin remapped to 0.0 to 8.0
     
 
     x = i;
-    y = (int)floor(sinRemap);
+    y = (int)sinRemap;
 
     turnLEDsOn(y, x);
   }
