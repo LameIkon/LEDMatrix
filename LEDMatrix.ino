@@ -7,8 +7,6 @@ void setup() {
   matrix.begin();
 }
 
-// MOLSTEDS CODE!!
-
 float lerp(float outMin, float outMax, float alpha) {
   // mixes 2 values linearly based on 0-1 range
   return outMin + (outMax - outMin) * alpha;
@@ -76,13 +74,11 @@ void loop(){
     float sinValue = sinf(6.28 * freq * i / 11 - 1.57 + 6.28 * time * timeScale); // sinf returns -1.0 to 1.0
     float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, 7.0); // sin remapped to 0.0 to 8.0
     
-
     x = i;
     y = (int)round(sinRemap);
 
     turnLEDsOn(y, x);
   }
-
 
   Serial.print(time);
   Serial.print(',');
