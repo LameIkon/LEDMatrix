@@ -2,11 +2,12 @@
 
 ArduinoLEDMatrix matrix;
 
-const int potPinFreq = A0;
-const int potPinTime = A1;
+const pin_size_t potPinFreq = A0;
+const pin_size_t potPinTime = A1;
+const pin_size_t potPinAmp = A2;
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(115200); // baud value for led matrix library
   matrix.begin();
 }
 
@@ -59,6 +60,7 @@ void turnLEDsOn(int x, int y){
 
 float freq;
 float offset = 0.25;
+float amp;
 
 float timeScale;
 
@@ -68,6 +70,8 @@ int y;
 void loop(){
   freq = remap(analogRead(potPinFreq), 0.0, 1023.0, 0.125, 2.5);
   timeScale = remap(analogRead(potPinTime), 0.0, 1023.0, 0.125, 2.0);
+  // amp = remap(analogRead(potPinAmp), 0.0, 1023.0, 0.0, 3.0);
+  amp = remap(analogRead(potPinAmp), 0.0, 1023.0, 0.0, 7.0);
 
   matrix.renderBitmap(frame, 8, 12);
 
@@ -78,7 +82,8 @@ void loop(){
   for(int i = 0; i < 12; i++){
     // float sinValue = sinf(6.28 * time * freq + (freq * i) - 1.57 + 6.28 * offset); // sinf returns -1.0 to 1.0
     float sinValue = sinf(6.28 * freq * i / 11 - 1.57 + 6.28 * time * timeScale); // sinf returns -1.0 to 1.0
-    float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, 7.0); // sin remapped to 0.0 to 8.0
+    // float sinRemap = remap(sinValue, -1.0, 1.0, amp, 7.0-amp); // sin remapped from amp to 7.0-amp, this makes it anchored in the middle of the matrix
+    float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, amp); // sin remapped to 7.0 to 0.0
     
     x = i;
     y = (int)round(sinRemap);
