@@ -1,58 +1,61 @@
-#include "Arduino_LED_Matrix.h"
+#include "Arduino_LED_Matrix.h" // led matrix library 
 
-ArduinoLEDMatrix matrix;
-#define 
+ArduinoLEDMatrix matrix; 
 
+// initialize pins for analog ports
 const pin_size_t potPinFreq = A0;
 const pin_size_t potPinPhase = A1;
 const pin_size_t potPinAmp = A2;
 
-float freq;
-float amp;
+// declare variables to later be controlled by the potentiometer
+float frequency;
+float amplitude;
 float phaseShift;
+
+// initial phaseShift to start wave at 0
 float offset = 0.25;
 
+// led matrix x and y
 uint8_t x;
 uint8_t y;
 
-uint8_t frame[8][12] = {
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-};
+// led matrix
+uint8_t frame[8][12];
 
+// utility math functions
 float lerp(float outMin, float outMax, float alpha);
 float inverseLerp(float value, float inMin, float inMax);
 float remap(float value, float inMin, float inMax, float outMin, float outMax);
-void turnEntireFrameOff();
-void turnLEDsOn(int x, int y);
+
+void turnEntireFrameOff(); 
+void turnLEDsOn(int x, int y); 
 
 void setup() {
   Serial.begin(115200); // baud value for led matrix library
-  matrix.begin();
+  matrix.begin(); // needed to write to the led matrix
 }
   
 void loop(){
-  // Reading vaules
-  freq = remap(analogRead(potPinFreq), 0.0, 1023.0, 0.125, 2.5);
+  // Reading and remapping values controlled by potentiometer
+  frequency = remap(analogRead(potPinFreq), 0.0, 1023.0, 0.125, 2.5);
   phaseShift = remap(analogRead(potPinPhase), 0.0, 1023.0, 0.125, 2.0);
-  amp = remap(analogRead(potPinAmp), 0.0, 1023.0, 0.0, 7.0);
+  amplitude = remap(analogRead(potPinAmp), 0.0, 1023.0, 0.0, 7.0);
   
+  // render led matrix
   matrix.renderBitmap(frame, 8, 12);
 
+  // convert time to seconds
   float time = millis() / 1000.0; // time in seconds
 
+  // prepare new frame for leed amtrix
   turnEntireFrameOff();
 
-  // Writing values
+  // Writing values for sin wave
+  // Going through all leds in the matrix, which consits of 12 columns and 8 rows
   for(int i = 0; i < 12; i++){
-    float sinValue = sinf(6.28 * freq * i / 11 - 1.57 + 6.28 * time * phaseShift); // sinf returns -1.0 to 1.0
-    float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, amp); // sin remapped to 7.0 to 0.0
+    // 
+    float sinValue = sinf(6.28 * frequency * i / 11 - 1.57 + 6.28 * time * phaseShift); // sinf returns -1.0 to 1.0
+    float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, amplitude); // sin remapped to 7.0 to 0.0
 
     x = i;
     y = (int)round(sinRemap);
@@ -63,7 +66,7 @@ void loop(){
   // Debugging purposes.
   Serial.print(time);
   Serial.print(',');
-  Serial.print(freq);
+  Serial.print(frequency);
   Serial.print(',');
   Serial.print(phaseShift);
   Serial.print(',');
