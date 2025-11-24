@@ -9,10 +9,6 @@ void setup() {
   matrix.begin();
 }
 
-// MOLSTEDS CODE!!
-float freq;
-float offset = 0.25;
-
 float lerp(float outMin, float outMax, float alpha) {
   // mixes 2 values linearly based on 0-1 range
   return outMin + (outMax - outMin) * alpha;
@@ -60,43 +56,33 @@ void turnLEDsOn(int x, int y){
 
 }
 
+float freq = 1.0;
+float offset = 0.25;
+
+float timeScale = 0.2;
+
 int x;
 int y;
   
 void loop(){
   matrix.renderBitmap(frame, 8, 12);
-  //turnEntireFrame();
-  //delay(500);
-
-  //delay(20);
 
   float time = millis() / 1000.0; // time in seconds
-
-  freq = remap((float)analogRead(potPin), 0.0, 1023.0, 0.125, 3.0);
-
-  if(freq < 0.25) freq = 0.125;
-  else if(freq < 0.5) freq = 0.25;
-  else if(freq < 1.0) freq = 0.5;
-  else if(freq < 2.0) freq = 1.0;
-  else freq = 2.0;
-
-
 
   turnEntireFrameOff();
 
   for(int i = 0; i < 12; i++){
-    float sinValue = sinf(6.28 * time * freq + (freq * i) - 1.57 + 6.28 * offset); // sinf returns -1.0 to 1.0
-    float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, 8.0); // sin remapped to 0.0 to 8.0
+    // float sinValue = sinf(6.28 * time * freq + (freq * i) - 1.57 + 6.28 * offset); // sinf returns -1.0 to 1.0
+    float sinValue = sinf(6.28 * freq * i / 11 - 1.57 + 6.28 * time * timeScale); // sinf returns -1.0 to 1.0
+    float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, 7.0); // sin remapped to 0.0 to 8.0
     
-
     x = i;
-    y = (int)floor(sinRemap);
+    y = (int)round(sinRemap);
 
     turnLEDsOn(y, x);
   }
 
-
-  Serial.print(freq);
+  Serial.print(time);
   Serial.print(',');
   Serial.print(x);
   Serial.print(',');
