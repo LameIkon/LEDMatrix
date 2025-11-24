@@ -68,17 +68,20 @@ int x;
 int y;
   
 void loop(){
+  // Reading vaules
   freq = remap(analogRead(potPinFreq), 0.0, 1023.0, 0.125, 2.5);
   timeScale = remap(analogRead(potPinTime), 0.0, 1023.0, 0.125, 2.0);
   // amp = remap(analogRead(potPinAmp), 0.0, 1023.0, 0.0, 3.0);
   amp = remap(analogRead(potPinAmp), 0.0, 1023.0, 0.0, 7.0);
 
+  
   matrix.renderBitmap(frame, 8, 12);
 
   float time = millis() / 1000.0; // time in seconds
 
   turnEntireFrameOff();
 
+  // Writing values
   for(int i = 0; i < 12; i++){
     // float sinValue = sinf(6.28 * time * freq + (freq * i) - 1.57 + 6.28 * offset); // sinf returns -1.0 to 1.0
     float sinValue = sinf(6.28 * freq * i / 11 - 1.57 + 6.28 * time * timeScale); // sinf returns -1.0 to 1.0
@@ -91,6 +94,7 @@ void loop(){
     turnLEDsOn(y, x);
   }
 
+  // Debugging purposes.
   Serial.print(time);
   Serial.print(',');
   Serial.print(freq);
