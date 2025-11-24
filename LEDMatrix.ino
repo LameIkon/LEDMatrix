@@ -2,7 +2,8 @@
 
 ArduinoLEDMatrix matrix;
 
-const int potPin = A0;
+const int potPinFreq = A0;
+const int potPinTime = A1;
 
 void setup() {
   Serial.begin(115200);
@@ -56,15 +57,18 @@ void turnLEDsOn(int x, int y){
 
 }
 
-float freq = 1.0;
+float freq;
 float offset = 0.25;
 
-float timeScale = 0.2;
+float timeScale;
 
 int x;
 int y;
   
 void loop(){
+  freq = remap(analogRead(potPinFreq), 0.0, 1023.0, 0.125, 2.5);
+  timeScale = remap(analogRead(potPinTime), 0.0, 1023.0, 0.125, 2.0);
+
   matrix.renderBitmap(frame, 8, 12);
 
   float time = millis() / 1000.0; // time in seconds
@@ -83,6 +87,10 @@ void loop(){
   }
 
   Serial.print(time);
+  Serial.print(',');
+  Serial.print(freq);
+  Serial.print(',');
+  Serial.print(timeScale);
   Serial.print(',');
   Serial.print(x);
   Serial.print(',');
