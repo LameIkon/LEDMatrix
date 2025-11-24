@@ -83,10 +83,9 @@ void loop(){
 
   // Writing values
   for(int i = 0; i < 12; i++){
-    // float sinValue = sinf(6.28 * time * freq + (freq * i) - 1.57 + 6.28 * offset); // sinf returns -1.0 to 1.0
     float sinValue = sinf(6.28 * freq * i / 11 - 1.57 + 6.28 * time * timeScale); // sinf returns -1.0 to 1.0
-    // float sinRemap = remap(sinValue, -1.0, 1.0, amp, 7.0-amp); // sin remapped from amp to 7.0-amp, this makes it anchored in the middle of the matrix
     float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, amp); // sin remapped to 7.0 to 0.0
+    // float sinRemap = remap(sinValue, -1.0, 1.0, amp, 7.0-amp); // Alternative: sin remapped from amp to 7.0-amp, this makes it anchored in the middle of the matrix
     
     x = i;
     y = (int)round(sinRemap);
