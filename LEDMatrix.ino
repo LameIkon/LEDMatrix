@@ -40,7 +40,6 @@ void loop(){
   // Reading vaules
   freq = remap(analogRead(potPinFreq), 0.0, 1023.0, 0.125, 2.5);
   phaseShift = remap(analogRead(potPinPhase), 0.0, 1023.0, 0.125, 2.0);
-  // amp = remap(analogRead(potPinAmp), 0.0, 1023.0, 0.0, 3.0);
   amp = remap(analogRead(potPinAmp), 0.0, 1023.0, 0.0, 7.0);
   
   matrix.renderBitmap(frame, 8, 12);
@@ -53,8 +52,7 @@ void loop(){
   for(int i = 0; i < 12; i++){
     float sinValue = sinf(6.28 * freq * i / 11 - 1.57 + 6.28 * time * phaseShift); // sinf returns -1.0 to 1.0
     float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, amp); // sin remapped to 7.0 to 0.0
-    // float sinRemap = remap(sinValue, -1.0, 1.0, amp, 7.0-amp); // Alternative: sin remapped from amp to 7.0-amp, this makes it anchored in the middle of the matrix
-    
+
     x = i;
     y = (int)round(sinRemap);
 
