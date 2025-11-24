@@ -1,6 +1,7 @@
 #include "Arduino_LED_Matrix.h"
 
 ArduinoLEDMatrix matrix;
+#define 
 
 const pin_size_t potPinFreq = A0;
 const pin_size_t potPinPhase = A1;
