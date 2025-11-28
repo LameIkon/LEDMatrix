@@ -1,6 +1,6 @@
-#include "Arduino_LED_Matrix.h" // led matrix library 
+#include "Arduino_LED_Matrix.h" // include led matrix library 
 
-ArduinoLEDMatrix matrix; 
+ArduinoLEDMatrix matrix; // LED Matrix object
 
 // initialize pins for analog ports
 const pin_size_t potPinFreq = A0;
@@ -31,36 +31,48 @@ void turnEntireFrameOff();
 void turnLEDsOn(int x, int y); 
 
 void setup() {
-  Serial.begin(115200); // baud value for led matrix library
-  matrix.begin(); // needed to write to the led matrix
+  Serial.begin(115200); // opens serial port and sets data rate to baud value needed for LED matrix
+  matrix.begin(); // start LED matrix
 }
   
 void loop(){
-  // Reading and remapping values controlled by potentiometer
-  frequency = remap(analogRead(potPinFreq), 0.0, 1023.0, 0.125, 2.5);
+  // Reading analog values controlled by the potentiometer and remap 0 to 1023 to fit range for sin wave calculations
+  frequency = remap(analogRead(potPinFreq), 0.0, 1023.0, 0.125, 2.5); // frequency range: 0.125 to 2.5
   phaseShift = remap(analogRead(potPinPhase), 0.0, 1023.0, 0.125, 2.0);
   amplitude = remap(analogRead(potPinAmp), 0.0, 1023.0, 0.0, 7.0);
   
   // render led matrix
   matrix.renderBitmap(frame, 8, 12);
 
-  // convert time to seconds
-  float time = millis() / 1000.0; // time in seconds
+  // time since program start in seconds
+  float time = millis() / 1000.0;
 
-  // prepare new frame for leed amtrix
+  // prepare new frame for LED matrix update
   turnEntireFrameOff();
 
-  // Writing values for sin wave
-  // Going through all leds in the matrix, which consits of 12 columns and 8 rows
+  // Write sin wave values to LED matrix,
+  // by going through all 12 columns of the LED matrix and finding the belonging row according to the sin wave calculations
   for(int i = 0; i < 12; i++){
-    // 
-    float sinValue = sinf(6.28 * frequency * i / 11 - 1.57 + 6.28 * time * phaseShift); // sinf returns -1.0 to 1.0
-    float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, amplitude); // sin remapped to 7.0 to 0.0
+    // 6.28 (2 pi) is used to express a full wave per x, which makes further changes easier to calculate
+    // We can then make the full length of the LED matrix represent 1 wave by letting each column, i, be 1 / 11 of a full wave
+    // This way the frequency controls waves per full LED matrix length
 
+    // The other part controls the phaseShift of the sin wave, 
+    // with an initial offset of 1/2 pi to start at the bottom of the wave
+    // The sin wave is animated by multiplying phaseShift with time, 
+    // where phaseShift is waves per second, because the time is scaled with 2 pi
+    
+    float sinValue = sinf(6.28 * frequency * i / 11 - 1.57 + 6.28 * time * phaseShift); // sinf returns -1.0 to 1.0
+    float sinRemap = remap(sinValue, -1.0, 1.0, 0.0, amplitude); // sin value remapped to 0.0 to 7.0 (amplitude)
+
+    // set current x and y
     x = i;
     y = (int)round(sinRemap);
 
+    // write and turn on the currenty looked at LED in the LED matrix
     turnLEDsOn(y, x);
+    
+    // repeat as long as there are more columns to look at in the LED matrix
   }
 
   // Debugging purposes.
